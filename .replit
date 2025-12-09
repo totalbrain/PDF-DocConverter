@@ -2,7 +2,11 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "poppler_utils", "tcl", "tk", "zlib", "poppler"]
 
 [deployment]
 deploymentTarget = "autoscale"
 run = ["streamlit", "run", "app.py", "--server.port", "5000"]
+
+[agent]
+integrations = ["python_gemini:1.0.0"]
