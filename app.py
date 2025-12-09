@@ -339,6 +339,10 @@ def show_converter_page():
         log_container = st.container()
         comparison_container = st.container()
         
+        with log_container:
+            st.info("🚀 Starting conversion process...")
+            st.info(f"Start button: {start_button}, Resume button: {resume_button}")
+        
         start_time = time.time()
         job_id = None
         
@@ -347,16 +351,24 @@ def show_converter_page():
             
             if resume_button and saved_progress:
                 if not uploaded_files:
-                    st.error("Please upload the same PDF file to resume")
+                    with log_container:
+                        st.error("Please upload the same PDF file to resume")
                     st.session_state.processing = False
                     st.rerun()
                 files_to_process = [(uploaded_files[0], saved_progress)]
+                with log_container:
+                    st.info(f"Resuming 1 file: {uploaded_files[0].name}")
             else:
                 if not uploaded_files:
-                    st.error("Please upload PDF file(s) first")
+                    with log_container:
+                        st.error("Please upload PDF file(s) first")
                     st.session_state.processing = False
                     st.rerun()
                 files_to_process = [(f, None) for f in uploaded_files]
+                with log_container:
+                    st.info(f"Processing {len(uploaded_files)} new file(s)")
+                    for f in uploaded_files:
+                        st.info(f"  - {f.name}")
             
             total_files = len(files_to_process)
             
