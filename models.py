@@ -40,12 +40,23 @@ def get_session():
 def init_db():
     engine = get_engine()
     if engine:
-        Base.metadata.create_all(engine)
+        try:
+            Base.metadata.create_all(engine)
+            import sys
+            print("SUCCESS: Database tables created/verified", file=sys.stderr)
+        except Exception as e:
+            import sys
+            print(f"ERROR initializing database: {str(e)}", file=sys.stderr)
+    else:
+        import sys
+        print("ERROR: Cannot initialize database - no engine (DATABASE_URL missing)", file=sys.stderr)
 
 def create_job(filename: str, total_pages: int, custom_prompt: str = None) -> int:
     session = get_session()
     if not session:
-        print("ERROR: Database session is None. Check DATABASE_URL environment variable.")
+        import sys
+        error_msg = "ERROR: Database session is None. Check DATABASE_URL environment variable."
+        print(error_msg, file=sys.stderr)
         return None
     try:
         job = ConversionJob(
@@ -58,10 +69,13 @@ def create_job(filename: str, total_pages: int, custom_prompt: str = None) -> in
         session.commit()
         job_id = job.id
         session.close()
-        print(f"SUCCESS: Created job {job_id} for {filename}")
+        import sys
+        print(f"SUCCESS: Created job {job_id} for {filename}", file=sys.stderr)
         return job_id
     except Exception as e:
-        print(f"ERROR creating job: {str(e)}")
+        import sys
+        error_msg = f"ERROR creating job: {str(e)}\nDatabase URL format check: {DATABASE_URL[:20] if DATABASE_URL else 'None'}..."
+        print(error_msg, file=sys.stderr)
         session.rollback()
         session.close()
         return None

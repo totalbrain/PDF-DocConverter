@@ -393,11 +393,22 @@ def show_converter_page():
                     failed_pages = []
                     start_page = 0
                     
+                    with log_container:
+                        st.info(f"🔍 Creating job in database for {uploaded_file.name}...")
+                        st.info(f"DATABASE_URL exists: {bool(os.environ.get('DATABASE_URL'))}")
+                    
                     job_id = create_job(uploaded_file.name, total_pages, use_prompt if use_prompt != DEFAULT_OCR_PROMPT else None)
+                    
+                    with log_container:
+                        st.info(f"Job ID returned: {job_id}")
                     
                     if not job_id:
                         with log_container:
-                            st.error("❌ Failed to create job in database. Check DATABASE_URL.")
+                            st.error("❌ Failed to create job in database.")
+                            st.error("Please check:")
+                            st.error("1. DATABASE_URL is set in Secrets")
+                            st.error("2. Database is accessible")
+                            st.error("3. Check console logs for more details")
                         st.session_state.processing = False
                         st.rerun()
                     
