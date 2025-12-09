@@ -2,7 +2,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "poppler_utils", "tcl", "tk", "zlib", "poppler"]
+packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "poppler", "poppler_utils", "tcl", "tk", "zlib"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -40,5 +40,9 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 36267
+localPort = 37947
+externalPort = 3001
+
+[[ports]]
+localPort = 43089
 externalPort = 3000
