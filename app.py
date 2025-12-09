@@ -243,6 +243,12 @@ def show_converter_page():
         st.info("Go to Secrets tab and add your Gemini API key with the name 'GEMINI_API_KEY'")
         return
     
+    # Check database connection
+    if not os.environ.get("DATABASE_URL"):
+        st.error("⚠️ DATABASE_URL not found in environment secrets. Please add it to continue.")
+        st.info("Go to Secrets tab and add your PostgreSQL database URL with the name 'DATABASE_URL'")
+        return
+    
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(TEMP_DIR, exist_ok=True)
     
@@ -388,6 +394,12 @@ def show_converter_page():
                     start_page = 0
                     
                     job_id = create_job(uploaded_file.name, total_pages, use_prompt if use_prompt != DEFAULT_OCR_PROMPT else None)
+                    
+                    if not job_id:
+                        with log_container:
+                            st.error("❌ Failed to create job in database. Check DATABASE_URL.")
+                        st.session_state.processing = False
+                        st.rerun()
                     
                     save_progress({
                         'total_pages': total_pages,

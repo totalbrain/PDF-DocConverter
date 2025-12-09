@@ -45,18 +45,26 @@ def init_db():
 def create_job(filename: str, total_pages: int, custom_prompt: str = None) -> int:
     session = get_session()
     if not session:
+        print("ERROR: Database session is None. Check DATABASE_URL environment variable.")
         return None
-    job = ConversionJob(
-        filename=filename,
-        total_pages=total_pages,
-        status="processing",
-        custom_prompt=custom_prompt
-    )
-    session.add(job)
-    session.commit()
-    job_id = job.id
-    session.close()
-    return job_id
+    try:
+        job = ConversionJob(
+            filename=filename,
+            total_pages=total_pages,
+            status="processing",
+            custom_prompt=custom_prompt
+        )
+        session.add(job)
+        session.commit()
+        job_id = job.id
+        session.close()
+        print(f"SUCCESS: Created job {job_id} for {filename}")
+        return job_id
+    except Exception as e:
+        print(f"ERROR creating job: {str(e)}")
+        session.rollback()
+        session.close()
+        return None
 
 def update_job_progress(job_id: int, completed_pages: int, failed_pages: int = 0):
     session = get_session()
